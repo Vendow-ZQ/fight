@@ -1,0 +1,377 @@
+@import "tailwindcss";
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #000;
+  color: #fff;
+  font-family: 'Rajdhani', 'Noto Sans SC', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+*, *::before, *::after {
+  cursor: none !important;
+}
+
+.history-card {
+  transition: transform 0.2s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.history-card:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(180, 220, 255, 0.15) !important;
+  box-shadow: 0 4px 20px rgba(180, 220, 255, 0.06);
+}
+
+.history-close-btn {
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+}
+
+.history-close-btn:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #fff !important;
+  transform: scale(1.1);
+}
+
+.topic-bubble {
+  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.topic-bubble:hover {
+  transform: scale(1.08);
+  background: #fff !important;
+  box-shadow: 0 0 14px 2px rgba(180, 220, 255, 0.5);
+}
+
+.battle-bubble {
+  transition: transform 0.15s, box-shadow 0.2s;
+}
+
+.battle-bubble:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.battle-reaction-btn {
+  transition: transform 0.15s, box-shadow 0.2s, background 0.15s;
+}
+
+.battle-reaction-btn:hover {
+  transform: scale(1.18);
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  background: #f0f0f0 !important;
+}
+
+.battle-reaction-btn:active {
+  transform: scale(0.9);
+}
+
+.battle-bar-btn {
+  transition: transform 0.15s, box-shadow 0.2s, background 0.15s;
+}
+
+.battle-bar-btn:hover:not(:disabled) {
+  transform: scale(1.06);
+  box-shadow: 0 2px 14px rgba(180, 220, 255, 0.4);
+  background: #f0f0f0 !important;
+}
+
+.battle-bar-btn:active:not(:disabled) {
+  transform: scale(0.95);
+}
+
+.fight-btn {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.3s, background 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.fight-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(180,220,255,0.3), rgba(255,255,255,0) 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.fight-btn:hover::before {
+  opacity: 1;
+}
+
+.fight-btn:hover {
+  transform: scale(1.06);
+}
+
+.fight-btn-active:hover {
+  box-shadow:
+    0 0 20px 4px rgba(180, 220, 255, 0.5),
+    0 0 60px 8px rgba(180, 220, 255, 0.15),
+    inset 0 0 20px rgba(180, 220, 255, 0.1);
+}
+
+.fight-btn:active {
+  transform: scale(0.97);
+}
+
+@keyframes fight-pulse {
+  0%, 100% { box-shadow: 0 0 12px 2px rgba(180,220,255,0.3); }
+  50% { box-shadow: 0 0 24px 6px rgba(180,220,255,0.5); }
+}
+
+.fight-btn-active {
+  animation: fight-pulse 2s ease-in-out infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ---- Distill button steam effect ---- */
+.distill-btn {
+  position: relative;
+  overflow: visible;
+}
+
+.distill-btn::before,
+.distill-btn::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 50%;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(90, 90, 90, 0.6);
+  opacity: 0;
+  pointer-events: none;
+  filter: blur(10px);
+}
+
+.distill-btn:hover::before {
+  animation: steam-left 1.2s ease-out infinite;
+}
+
+.distill-btn:hover::after {
+  animation: steam-right 1.2s ease-out 0.25s infinite;
+}
+
+.distill-btn:hover .distill-btn-inner {
+  transform: scale(1.12);
+  box-shadow: 0 0 28px 8px rgba(255, 255, 255, 0.3), 0 12px 32px rgba(0,0,0,0.3);
+}
+
+.distill-btn:hover .steam-p {
+  animation-play-state: running;
+}
+
+@keyframes steam-left {
+  0%   { opacity: 0; transform: translate(-50%, 0) scale(1); }
+  10%  { opacity: 0.8; }
+  50%  { opacity: 0.4; }
+  100% { opacity: 0; transform: translate(calc(-50% - 30px), -90px) scale(4.0); }
+}
+
+@keyframes steam-right {
+  0%   { opacity: 0; transform: translate(-50%, 0) scale(1); }
+  10%  { opacity: 0.75; }
+  50%  { opacity: 0.35; }
+  100% { opacity: 0; transform: translate(calc(-50% + 28px), -95px) scale(3.8); }
+}
+
+@keyframes steam-p1 {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0.8); }
+  8%   { opacity: 0.8; }
+  50%  { opacity: 0.35; }
+  100% { opacity: 0; transform: translate(-20px, -85px) scale(4.0); }
+}
+@keyframes steam-p2 {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0.7); }
+  10%  { opacity: 0.75; }
+  50%  { opacity: 0.3; }
+  100% { opacity: 0; transform: translate(16px, -92px) scale(4.5); }
+}
+@keyframes steam-p3 {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0.9); }
+  9%   { opacity: 0.7; }
+  50%  { opacity: 0.3; }
+  100% { opacity: 0; transform: translate(-12px, -78px) scale(3.8); }
+}
+@keyframes steam-p4 {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0.7); }
+  12%  { opacity: 0.8; }
+  50%  { opacity: 0.35; }
+  100% { opacity: 0; transform: translate(22px, -88px) scale(4.2); }
+}
+@keyframes steam-p5 {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0.8); }
+  7%   { opacity: 0.7; }
+  50%  { opacity: 0.3; }
+  100% { opacity: 0; transform: translate(-24px, -90px) scale(3.8); }
+}
+@keyframes steam-p6 {
+  0%   { opacity: 0; transform: translate(0, 0) scale(0.7); }
+  13%  { opacity: 0.8; }
+  50%  { opacity: 0.35; }
+  100% { opacity: 0; transform: translate(10px, -100px) scale(4.8); }
+}
+
+/* ---- Chunky clay title effect ---- */
+.clay-title {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 2px;
+}
+
+.clay-char {
+  display: inline-block;
+  font-weight: 900;
+  color: #fff;
+  -webkit-text-stroke: 2px rgba(255,255,255,0.9);
+  paint-order: stroke fill;
+  text-shadow:
+    3px 3px 0 rgba(0,0,0,0.35),
+    5px 5px 0 rgba(0,0,0,0.18),
+    6px 7px 8px rgba(0,0,0,0.3),
+    0 0 20px rgba(180,220,255,0.25);
+  line-height: 1;
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+              filter 0.25s ease;
+  will-change: transform;
+}
+
+.clay-char:hover {
+  filter: brightness(1.15) drop-shadow(0 0 12px rgba(180,220,255,0.5));
+  z-index: 10;
+}
+
+@keyframes clay-bounce-in {
+  0% {
+    opacity: 0;
+    transform: var(--clay-hover) scale(0.2) rotate(calc(var(--clay-rot) - 20deg)) translateY(40px);
+  }
+  50% {
+    opacity: 1;
+    transform: var(--clay-hover) scale(1.15) rotate(calc(var(--clay-rot) + 4deg)) translateY(-8px);
+  }
+  70% {
+    transform: var(--clay-hover) scale(0.92) rotate(calc(var(--clay-rot) - 2deg)) translateY(3px);
+  }
+  85% {
+    transform: var(--clay-hover) scale(1.04) rotate(var(--clay-rot)) translateY(-2px);
+  }
+  100% {
+    opacity: 1;
+    transform: var(--clay-hover) scale(var(--clay-scale)) rotate(var(--clay-rot)) translateY(0);
+  }
+}
+
+@keyframes clay-wobble {
+  0%, 100% {
+    transform: var(--clay-hover) scale(var(--clay-scale)) rotate(var(--clay-rot)) translateY(0);
+  }
+  25% {
+    transform: var(--clay-hover) scale(var(--clay-scale)) rotate(calc(var(--clay-rot) + 1.5deg)) translateY(-2px);
+  }
+  75% {
+    transform: var(--clay-hover) scale(var(--clay-scale)) rotate(calc(var(--clay-rot) - 1.5deg)) translateY(1px);
+  }
+}
+
+@keyframes spin-out-up {
+  from { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(-100%); opacity: 0; }
+}
+@keyframes spin-in-up {
+  from { transform: translateY(100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+@keyframes spin-out-down {
+  from { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(100%); opacity: 0; }
+}
+@keyframes spin-in-down {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+
+/* ---- Result page clay card hover ---- */
+.result-clay-card {
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
+}
+
+.result-clay-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow:
+    0 12px 32px rgba(180, 160, 130, 0.25),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.06),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+}
+
+.result-card-wrapper:hover .result-clay-card {
+  animation: clay-pulse 2s ease-in-out infinite;
+}
+
+.result-clay-btn {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.result-clay-btn:hover {
+  transform: scale(1.06);
+  box-shadow:
+    0 6px 18px rgba(180, 160, 130, 0.3),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5) !important;
+}
+
+.result-clay-btn:active {
+  transform: scale(0.96);
+}
+
+.crosshair-h, .crosshair-v {
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.crosshair-dot {
+  transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.crosshair-ring {
+  transition: all 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.cursor-crosshair.cursor-hover .crosshair-h {
+  width: 8px !important;
+  left: -4px !important;
+  opacity: 0.4;
+}
+
+.cursor-crosshair.cursor-hover .crosshair-v {
+  height: 8px !important;
+  top: -4px !important;
+  opacity: 0.4;
+}
+
+.cursor-crosshair.cursor-hover .crosshair-dot {
+  width: 6px !important;
+  height: 6px !important;
+  top: -3px !important;
+  left: -3px !important;
+  box-shadow: 0 0 10px 3px rgba(180, 220, 255, 1) !important;
+}
+
+.cursor-crosshair.cursor-hover .crosshair-ring {
+  border-color: rgba(255, 255, 255, 0.7) !important;
+  box-shadow: 0 0 12px 2px rgba(180, 220, 255, 0.4) !important;
+}
