@@ -7,7 +7,6 @@ const DOMAIN_TAGS = [
 
 const PLATFORM_TAGS = ['抖音', 'B站', '小红书', 'Youtube']
 
-const COLORS = ['#A855F7', '#FF6B35', '#00C8FF', '#22C55E', '#FFD700', '#ff2d78', '#6366f1']
 
 interface DistillModalProps {
   open: boolean
