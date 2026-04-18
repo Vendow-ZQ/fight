@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: fight
+    runtime: docker
+    plan: free
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: ANTHROPIC_API_URL
+        sync: false
+      - key: CORS_ORIGINS
+        value: "*"
