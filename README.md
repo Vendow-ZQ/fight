@@ -1,317 +1,249 @@
-# 赛博斗蛐蛐 — 技术实现与设计逻辑
+赛博斗蛐蛐
 
-## 项目定位
+Slogan： 你不必再被他们说服，蒸馏你关注的博主，让他们来一场观点八角笼！
+赛博斗蛐蛐是一款基于大语言模型的 KOL 数字人辩论对战平台。用户选择 2-4 位风格迥异的网红博主，输入一个争议性话题，AI 驱动的"数字分身"便会在擂台上展开多轮激烈交锋：每位 KOL 都带着高度还原的语言风格、价值观与思维模式，像真人一样互怼、输出观点。用户还能作为"裁判"随时插话，把自己的看法丢进战场，改变辩论走向。
+暂时无法在飞书文档外展示此内容
 
-**赛博斗蛐蛐** 是一个基于大语言模型的多 Agent 实时辩论系统。用户输入一个辩题，选择 2-4 位预设的中文互联网 KOL（Key Opinion Leader），系统会驱动这些 AI 人格就该话题展开多轮实时对战。
+---
+一、问题洞察
+在信息爆炸的时代，用户面临三个核心痛点：
+1. 观点茧房：社交媒体的推荐算法让我们只能看到自己"想看"的内容，不同立场的碰撞越来越少。用户被困在单一 KOL 的叙事框架里，逐渐丧失批判性思考能力。
+2. 信息过载与决策疲劳：面对"考研还是就业""买房还是躺平""AI 会不会取代人类"等现实议题，各路博主给出截然不同的建议——有人讲数据、有人讲情怀、有人讲生存。用户缺乏一个能让这些声音同台较量、自行判断的场域。
+3. 被动接收 vs 主动思考：传统的内容消费模式是"博主输出，观众接收"。用户没有机会质疑、追问或参与辩论，思辨能力在"刷短视频"的快感中逐渐退化。
+赛博斗蛐蛐要解决的问题是：把用户从信息的被动接收者，变成观点碰撞的组织者和裁判，用娱乐化的方式重建批判性思考的场域。
 
-核心设计理念：**把 LLM 从"你问我答"的工具形态，变成一种可观赏的对抗性内容生产引擎。** 用户不再是提问者，而是一场观点格斗赛的导演和观众。
+---
+二、设计目标
+娱乐性：让不同风格的 KOL "吵起来"本身就是好看的内容，降低用户参与门槛
+启发性：同一话题下呈现多元视角，帮助用户跳出信息茧房，形成更立体的认知
+参与感：用户不只是旁观者——可以随时"裁判介入"，抛出自己的观点改变辩论走向
+真实感：每位 KOL 数字人语言风格、口头禅、价值观、思维漏洞都高度还原，让用户感受到"就是那个人在说话" 
+轻量化：不需要注册、不需要复杂操作，选人→出题→开打，30 秒进入战斗
+[图片]
+
+---
+三、产品设计思路
+（一）核心机制：KOL数字人蒸馏
+"蒸馏"是整个产品的灵魂。我们不是简单地给 AI 贴个名字标签，而是从五个维度对每位 KOL进行深度人格建模：
+reference：https://github.com/alchaincyf/nuwa-skill
+蒸馏维度
+说明
+示例（以张雪峰为例）
+心理模型
+5 个核心世界观/认知框架
+"社会是大筛子，学历/金钱/职业逐层筛选"
+决策启发式
+8+ 条思维捷径和判断规则
+"先问 5 个定位问题再给建议""500 强测试法"
+语言指纹
+高频口头禅、方言习惯、句式节奏
+"我跟你说""没有之一""千万别"，东北方言，短句机关枪式输出
+攻击策略
+辩论中的惯用套路和反驳模式
+用中位数数据碾压个案，用就业数据反驳"追求梦想"
+内在矛盾
+人格中自相矛盾的部分（增加真实感）
+自己靠"选错专业"成功，却教别人"一定要选对专业"
+[图片]
+（二）核心体验：擂台对战
+用户作为"上帝/裁判"，全程掌控对战规则：
+阶段一：备战（首页）
+- 通过 3D 卡片轮播选择 2-4 位参战 KOL，点击卡片即可选中/取消，已选角色显示 1P/2P 标记
+- 从 15 个预设热门话题中点选（无限循环滚动条），或手动输入自定义辩题
+- 配置对战参数：回合数（1-9 轮）、发言篇幅（精简 ~100 字 / 标准 ~200 字 / 详尽 ~400 字）
+- 支持切换多种背景
+[图片]
+阶段二：交锋（对战页）
+- 以聊天气泡形式实时呈现对战过程，每个 token 逐字流式输出，配合打字光标动画
+- 每轮按选择顺序依次发言，消息气泡左右交替排列
+- 每条发言下方有表情反应按钮（点击触发飞散粒子动画）
+- 顶部显示当前回合数、辩题、参战选手头像
+[图片]
+阶段三：复盘（结果页）
+- AI 自动为每位 KOL 生成观点摘要（bullet point 格式），以卡片形式并排展示
+- 每张摘要卡片下方有投票按钮，可给喜欢的 KOL 投票
+- 提供笔记区域，用户可以记录自己的思考
+- 支持"返回对局"回看完整对话，或"再来一局"开启新战斗
+[图片]
+（三）核心交互：裁判介入
+"裁判介入"是赛博斗蛐蛐区别于普通 AI 对话产品的关键设计。在对战过程中：
+1. 每轮结束后，用户可以在底部输入框输入自己的观点（如"我觉得你们都忽略了一个问题……"）
+2. 观点注入：用户的发言以蓝色气泡（带麦克风图标）显示在对话流中，并被标记为 `[观众]` 写入对战历史
+3. AI 回应：所有参战 KOL 在下一轮发言时，会以各自的方式回应用户观点
+4. 不干预选项：如果用户没有想说的，可以点击"我没意见"直接进入下一轮
+5. 随时叫停：用户可以在任意时刻点击"结束对局"进入复盘
+[图片]
+这个设计让用户从"旁观者"变成"参与者"，每一次介入都会切实改变辩论走向，带来独特的交互体验。
+（四）信息架构
+```Plain Text
+┌─────────────────────────────────────────────────┐
+│                   赛博斗蛐蛐                     │
+├─────────────────────────────────────────────────┤
+│                                                 │
+│  ┌─────────────┐                                │
+│  │  首页 Home   │                               │
+│  │             │                                │
+│  │ · KOL 选择  │──── 选择 2-4 位 KOL             │
+│  │ · 话题输入  │──── 输入/选择辩题                │
+│  │ · 参数配置  │──── 回合数 + 篇幅                │
+│  │ · 背景切换  │                                 │
+│  │ · 历史记录  │──── 侧边抽屉                     │
+│  └──────┬──────┘                                │
+│         │ "Let Them Fight!"                     │
+│         ▼                                       │
+│  ┌─────────────┐                                │
+│  │ 对战 Battle  │                               │
+│  │             │                               │
+│  │ · 实时流式  │──── SSE 逐字输出                │
+│  │ · 聊天气泡  │──── 左右交替布局                │
+│  │ · 裁判介入  │──── 用户输入观点                │
+│  │ · 继续辩论  │──── 追加回合                    │
+│  │ · 表情反应  │──── 飞散动画                    │
+│  └──────┬──────┘                               │
+│         │ "结束对局"                            │
+│         ▼                                      │
+│  ┌─────────────┐                               │
+│  │ 复盘 Result │                               │
+│  │             │                               │
+│  │ · 观点摘要  │──── AI 生成 bullet points      │
+│  │ · 投票评价  │──── 表情反应                    │
+│  │ · 思考笔记  │──── 文本记录                    │
+│  │ · 返回/重开 │                                │
+│  └─────────────┘                               │
+│                                                │
+└─────────────────────────────────────────────────┘```
+
+---
+四、技术实现方案
+（一）前端
+技术栈：React 19 + TypeScript + Vite + Tailwind CSS
+模块
+技术方案
+说明
+框架
+React 19.2 + TypeScript
+函数式组件 + Hooks，类型安全
+构建
+Vite
+极速 HMR，开发体验流畅
+样式
+Tailwind CSS 4 + 内联样式
+赛博朋克主题，Orbitron / Rajdhani / Noto Sans SC 字体
+流式通信
+EventSource (SSE) + ReadableStream
+GET 请求用 EventSource，POST 请求用 ReadableStream 解析 SSE
+状态管理
+React useState/useCallback
+轻量状态，无需外部状态库
+路由
+组件级状态切换
+三个页面通过父组件 App.tsx 的状态控制显示
+核心前端组件：
+```Plain Text
+src/
+├── App.tsx                 # 根组件，页面状态机（home → battle → result）
+├── pages/
+│   ├── HomePage.tsx        # 备战页：KOL 选择、话题输入、参数配置
+│   ├── BattlePage.tsx      # 对战页：流式消息、裁判介入、表情反应
+│   └── ResultPage.tsx      # 复盘页：AI 摘要、投票、笔记
+├── components/
+│   ├── KolCarousel.tsx     # 3D 卡片轮播组件
+│   ├── KolCard.tsx         # 单张 KOL 卡片（3D 透视效果）
+│   ├── CursorEffects.tsx   # 自定义十字准星光标 + 粒子尾迹
+│   └── HistoryDrawer.tsx   # 历史记录侧边抽屉
+├── api/
+│   └── battle.ts           # API 封装（开战/流式/注入/继续/总结）
+└── data/
+    └── kols.ts             # KOL 元数据（颜色、标签、标题）```
+流式消息处理机制：
+前端通过事件驱动模型处理 6 种 SSE 事件：
+- round_start → 更新回合计数器
+- agent_start → 创建空消息气泡，启动打字光标动画
+- token → 逐字追加到当前气泡（每个 token 带 150ms fade-in 动画）
+- agent_done → 定稿完整文本，移除光标
+- round_end → 视觉分隔
+- battle_end → 关闭流，启用交互控件
+（二）后端
+技术栈：FastAPI + Anthropic Claude API + SSE
+模块
+技术方案
+说明
+框架
+FastAPI (Python)
+异步支持，自动 OpenAPI 文档
+AI 引擎
+Anthropic Claude (claude-sonnet)
+流式输出，角色扮演能力强
+通信协议
+Server-Sent Events (SSE)
+实时逐字推送，低延迟
+状态管理
+内存字典 (battles)
+轻量级，适合单机部署
+服务器
+Uvicorn
+ASGI 服务器，支持热重载
+核心后端架构：
+```Plain Text
+server.py                   # FastAPI 应用入口
+├── GET  /api/kols          # 获取可用 KOL 列表
+├── POST /api/battle/start  # 创建对局（返回 battle_id）
+├── GET  /api/battle/{id}/stream    # SSE 流式对战
+├── POST /api/battle/{id}/inject    # 裁判介入（注入用户观点）
+├── POST /api/battle/{id}/continue  # 追加一轮对战
+└── POST /api/battle/{id}/summarize # AI 生成观点摘要
+
+battle_manager.py           # 对战核心逻辑
+├── BattleManager           # 对局管理器
+│   ├── build_messages_for()    # 为每位 KOL 构建对话上下文
+│   ├── agent_speak_stream()    # 流式生成发言（yield chunks）
+│   ├── inject_user_opinion()   # 写入用户观点到对战历史
+│   └── _adjusted_system_prompt()  # 根据篇幅动态调整字数限制
+└── battles: dict           # 全局对局存储
+
+personas/                   # KOL 人格定义
+├── elon_musk.py
+├── steve_jobs.py
+├── karpathy.py
+├── ilya_sutskever.py
+├── zhang_yiming.py
+├── hu_chenfeng.py          
+├── feng_ge.py              
+├── zhang_xuefeng.py        
+├── da_bing.py              
+└── changshu_arnold.py      ```
+对话构建策略：
+每位 KOL 在发言时，系统会为其构建独立的对话上下文：
+- System Prompt：该 KOL 的完整人格定义（心理模型 + 决策启发式 + 语言指纹 + 攻击策略 + 内在矛盾）
+- User 消息：辩题 + 其他选手的历史发言（标注说话人） + 观众发言
+- Assistant 消息：该 KOL 自己的历史发言
+这种设计确保每位 KOL 只"记得"自己说过的话，同时能看到对手的所有发言并做出针对性回应。
+
+---
+五、核心创新点
+1. 深度人格蒸馏，而非简单角色标签
+市面上的 AI 角色扮演产品通常只给模型一句话的角色描述。赛博斗蛐蛐为每位 KOL 构建了 200+ 行的 system prompt，涵盖心理模型、决策启发式、语言指纹、攻击策略和内在矛盾五个维度。这不是"扮演张雪峰"，而是"用张雪峰的大脑思考"。
+2. 多 Agent 实时对抗
+不是一对一的聊天，而是 2-4 个 AI Agent 在同一擂台上实时交锋。每位 Agent 能看到其他所有人的发言并做出回应，形成真正的多方辩论，观点碰撞产生的"化学反应"远比单独对话丰富。
+3. 用户作为"裁判"而非"对话者"
+传统 AI 聊天是"用户问-AI答"。赛博斗蛐蛐创造了一个全新的交互范式：用户是辩论的组织者和裁判，可以随时介入改变走向，但主要的观点输出来自 AI Agent 之间的博弈。这让用户从信息的被动接收者变成观点碰撞的主持人。
+4. 内在矛盾设计增强真实感
+每位 KOL 的人格中都刻意植入了"内在矛盾"，例如张雪峰自己靠选错专业成功，却教别人一定要选对专业。这种矛盾让 AI 的表现更像真人而非完美的辩论机器，对手也可能抓住这些矛盾发起攻击，让辩论更加真实、有趣。
+5. 流式对战的"现场感"
+通过 SSE 逐字推送 + 前端逐字动画，用户看到的不是一整段瞬间出现的文本，而是 KOL "正在思考、正在输出"的实时过程——就像看一场真正的直播辩论。配合赛博朋克风格的 UI 和自定义光标特效，营造沉浸式观战体验。
+
+---
+六、关键词结合
+关键词
+结合方式
+召唤师
+用户是唯一的召唤师，通过输入链接将KOL召唤进擂台
+镜子
+KOL数字人是用户信息茧房的镜子，battle让用户看清自己的认知偏食
+树洞
+结果页笔记区是用户说出真实判断的私人空间，不评判、不传播
 
 ---
 
-## 架构概览
-
-```
-┌──────────────────────────────────────────────────────────┐
-│                    Frontend (React + Vite)                │
-│  HomePage → BattlePage → ResultPage                      │
-│  SSE Consumer / Streaming Text Renderer                  │
-└──────────────────────┬───────────────────────────────────┘
-                       │  HTTP + SSE (Server-Sent Events)
-                       ▼
-┌──────────────────────────────────────────────────────────┐
-│                 Backend (FastAPI + Uvicorn)               │
-│  /api/battle/start   → 创建 BattleManager 实例           │
-│  /api/battle/:id/stream → SSE 流式推送多轮辩论           │
-│  /api/battle/:id/inject → 注入用户观点                   │
-│  /api/battle/:id/continue → 追加一轮辩论                 │
-│  /api/battle/:id/summarize → AI 总结各方观点              │
-└──────────────────────┬───────────────────────────────────┘
-                       │  Anthropic SDK (streaming)
-                       ▼
-┌──────────────────────────────────────────────────────────┐
-│              Claude API (bedrock-claude-sonnet)           │
-│  每个 Agent 独立 system prompt + 共享对话历史             │
-└──────────────────────────────────────────────────────────┘
-```
-
-前后端分离，Vite 开发服务器通过 proxy 将 `/api` 请求转发到 FastAPI 后端（端口 8000）。
-
 ---
-
-## 核心设计决策
-
-### 1. 多 Agent 对话的上帝视角架构
-
-这是整个系统最关键的设计决策。
-
-**问题**：Claude API 是单轮对话模型——每次请求只有一个 `system` + 一组 `messages`。如何让多个"人格"在同一个辩论场中互相感知、互相回应？
-
-**解法**：`BattleManager` 维护一个 **全局共享的 `battle_history`**（上帝视角），但在调用每个 Agent 时，将历史**转译**为该 Agent 的第一人称视角：
-
-```python
-# battle_manager.py: build_messages_for()
-for turn in self.battle_history:
-    if turn["speaker"] == agent_id:
-        messages.append({"role": "assistant", "content": turn["text"]})  # 自己说的 → assistant
-    elif turn["speaker"] == "__user__":
-        messages.append({"role": "user", "content": f"[观众]: {turn['text']}"})  # 观众 → user
-    else:
-        speaker_name = PERSONAS[turn["speaker"]]["name"]
-        messages.append({"role": "user", "content": f"[{speaker_name}]: {turn['text']}"})  # 对手 → user
-```
-
-**设计意图**：
-- 每个 Agent 看到的对话历史中，自己的发言是 `assistant`，其他所有人的发言（包括对手和观众）都是 `user`。这利用了 Claude 的 assistant/user 角色机制——模型天然会"接着 assistant 的话说"，并"回应 user 的内容"。
-- 观众（用户注入的观点）被标记为 `[观众]` 前缀，与对手发言区分。
-- 当最后一条消息恰好是当前 Agent 自己的发言时，会追加一条 `"（轮到你回应了）"` 提示，避免模型重复自己。
-
-### 2. Persona 系统：不只是提示词，是认知建模
-
-每个 KOL 的 `system_prompt` 不是简单的"你是XX，请模仿他说话"。而是一套完整的**认知模型文档**，包含：
-
-| 层次 | 内容 | 作用 |
-|------|------|------|
-| **身份背景** | 籍贯、学历、关键人生节点 | 锚定人格底色 |
-| **心智模型** | 3-5 个核心世界观框架 | 决定面对任何话题时的推理路径 |
-| **决策启发式** | 具体的判断规则 | 让回答有"条件反射"感 |
-| **经典语录库** | 真实出处的原话 | 提供表达锚点，避免漂移 |
-| **说话风格DNA** | 句式、语气词、口头禅、节奏 | 控制输出的语言质感 |
-| **攻击模式** | 对线时的策略链 | 让辩论有对抗性而非各说各话 |
-| **内在矛盾** | 人格的自相矛盾之处 | 增加真实感和戏剧性 |
-| **约束规则** | 字数限制、必须包含的要素 | 工程约束，确保输出可控 |
-
-以常熟阿诺为例，甚至建模了其**认知缺陷**（工作记忆容量、注意力持续时间、逻辑能力水平），并设计了**错别字系统**（形似字替换规则）和**情绪触发词机制**。这使得该角色的输出不只是"模仿说话方式"，而是从认知层面复现了一种特定的思维模式。
-
-### 3. 发言长度的动态控制
-
-用户可以选择 `short`/`standard`/`long` 三档篇幅，系统通过**双重控制**实现：
-
-```python
-# battle_manager.py
-LENGTH_CHAR_LIMITS = {"short": 100, "standard": 200, "long": 400}
-
-def _adjusted_system_prompt(self, agent_id: str) -> str:
-    prompt = PERSONAS[agent_id]["system_prompt"]
-    return re.sub(r"每次发言不超过\s*\d+\s*字", f"每次发言不超过 {self.char_limit} 字", prompt)
-```
-
-- **Prompt 层**：正则替换 system prompt 中的字数约束
-- **Token 层**：`max_tokens` 参数同步调整（short=300, standard=600, long=1200）
-
-这是一种务实的策略：LLM 对"不超过200字"的指令遵从度不稳定，但配合 `max_tokens` 硬截断可以兜底。
-
-### 4. SSE 流式传输：逐 Token 推送
-
-辩论过程通过 Server-Sent Events 实时推送，定义了 6 种事件类型：
-
-```
-round_start  → 新一轮开始
-agent_start  → 某个 Agent 开始发言
-token        → 逐 token 流式输出
-agent_done   → 某个 Agent 发言完毕（附完整文本）
-round_end    → 当前轮结束
-battle_end   → 所有轮次结束
-```
-
-**设计意图**：
-- `token` 事件实现了"打字机效果"的实时体验，用户可以看到每个 Agent 的发言逐字出现
-- `agent_done` 事件携带完整文本，用于替换流式拼接的文本（避免 UTF-8 拆字等边界问题）
-- 前端使用 `EventSource`（初始流）和 `fetch + ReadableStream`（继续对局）两种方式消费 SSE，因为 `EventSource` 只支持 GET，而 `continue` 接口是 POST
-
-后端的 `_stream_rounds` 是一个同步生成器，直接 `yield` SSE 格式的字符串：
-
-```python
-for chunk in bm.agent_speak_stream(agent_id):
-    yield sse_event("token", {"agent_id": agent_id, "token": chunk})
-```
-
-这依赖 FastAPI 的 `StreamingResponse` 对同步生成器的支持，底层由 Uvicorn 的异步事件循环驱动。
-
-### 5. 用户介入机制：观众席投石
-
-辩论进行中，用户可以通过 `inject` 接口投入自己的观点：
-
-```python
-def inject_user_opinion(self, text: str):
-    self.battle_history.append({"speaker": "__user__", "text": text})
-```
-
-用户观点被追加到全局历史后，下一轮所有 Agent 都会在各自的 `messages` 中看到 `[观众]: xxx`，并据此调整回应。这让用户从旁观者变成参与者——你可以挑衅某个 Agent，或者抛出新的论据改变辩论走向。
-
-### 6. 对局后 AI 总结
-
-`/summarize` 接口为每个 Agent 单独生成观点总结：
-
-```python
-system="你是一个中立的观点总结助手。请把以下辩手的所有发言总结成简洁的 bullet point 观点列表。"
-```
-
-这是一个独立的 LLM 调用，使用中立的 system prompt（而非辩手人格），确保总结客观。通过 `asyncio.run_in_executor` 在线程池中执行阻塞的 Anthropic SDK 调用，避免阻塞 FastAPI 的事件循环。
-
----
-
-## 前端技术实现
-
-### 页面流转
-
-```
-HomePage  ──[Let Them Fight!]──▸  BattlePage  ──[结束对局]──▸  ResultPage
-                                      │                           │
-                                      ◂───────[返回对局]──────────┘
-                                      │
-              ◂───────[返回首页]───────┘
-```
-
-使用 React `useState` 驱动的手动路由（非 react-router），三个页面通过 `page` 状态切换。`BattlePage` 挂载后不卸载（`display: contents/none`），保持 SSE 连接和滚动位置。
-
-### 流式文本渲染（StreamingText 组件）
-
-```tsx
-// 核心思路：增量 DOM 操作，避免 React re-render
-useEffect(() => {
-    const newChars = text.slice(prev)
-    const span = document.createElement('span')
-    span.textContent = newChars
-    span.style.animation = 'token-fade 0.15s ease-out'
-    el.insertBefore(span, cursor)
-}, [text])
-```
-
-直接操作 DOM 而非依赖 React 的 virtual DOM diff，避免高频 token 事件导致的渲染性能问题。每个新 token 创建独立的 `<span>` 并附加淡入动画。
-
-### KOL 选择卡片轮播（KolCarousel）
-
-扇形排列的卡片，通过预定义的位置矩阵实现：
-
-```tsx
-const ROT    = [-20, -10,  0,  10,  20]    // 旋转角度
-const X_OFF  = [-320, -160,  0,  160,  320] // 水平偏移
-const Y_SINK = [180,  100,  60,  100,  180] // 下沉量
-const SCALE  = [0.75, 0.87, 1.0, 0.87, 0.75] // 缩放
-```
-
-选中的卡片显示玩家编号（1P/2P/3P/4P）和对应颜色的发光边框，最多支持 4 人同台。
-
-### 自定义光标系统（CursorEffects）
-
-全局隐藏原生光标（`cursor: none !important`），替换为十字准星 + 粒子拖尾：
-
-- **十字准星**：由水平线、垂直线、中心点、悬停环组成，hover 交互元素时缩小并发光
-- **粒子拖尾**：25 个粒子对象池，每 20ms 回收一个粒子到鼠标位置，通过 `requestAnimationFrame` 驱动衰减动画
-- 粒子不使用 React 状态管理，全部通过 `ref` + 直接 DOM 操作实现，保证 60fps
-
-### 话题气泡无限滚动（TopicStrip）
-
-预设话题列表三倍复制实现伪无限滚动：
-
-```tsx
-const tripled = [...topics, ...topics, ...topics]
-```
-
-滚动到边界时跳转到中间副本（`clampScroll`），支持鼠标拖拽和滚轮操作。拖拽时通过 `moved` 标志区分拖拽和点击，避免误触。
-
-### Reaction 按钮（emoji 粒子爆炸）
-
-点击反应按钮时，在按钮位置创建 6-10 个 emoji DOM 元素，通过 CSS 变量 + `@keyframes` 驱动随机方向的飞散动画，750ms 后自动移除。
-
----
-
-## 数据流
-
-```
-用户点击 "Let Them Fight!"
-    │
-    ▼
-POST /api/battle/start
-    → 创建 BattleManager，生成 battle_id
-    → battles[battle_id] = bm（内存存储）
-    │
-    ▼
-GET /api/battle/{id}/stream
-    → StreamingResponse + SSE
-    → 每轮依次调用每个 Agent:
-        → build_messages_for(agent_id)  // 转译为该 Agent 视角
-        → client.messages.stream(...)    // Claude streaming API
-        → yield token events             // 逐 token 推送
-    │
-    ▼
-用户输入观点
-    │
-    ▼
-POST /api/battle/{id}/inject
-    → battle_history.append(user_opinion)
-    │
-    ▼
-POST /api/battle/{id}/continue
-    → 追加一轮 SSE 流
-    │
-    ▼
-POST /api/battle/{id}/summarize
-    → 为每个 Agent 独立调用 Claude 生成观点总结
-    → 返回 JSON
-```
-
----
-
-## 技术栈
-
-| 层 | 技术 | 选型理由 |
-|----|------|----------|
-| **LLM** | Claude (bedrock-claude-sonnet) via Anthropic SDK | 原生 streaming 支持，中文质量好 |
-| **后端** | FastAPI + Uvicorn | 原生 SSE/StreamingResponse 支持，async 能力 |
-| **前端框架** | React 19 + TypeScript | — |
-| **构建工具** | Vite 8 + Tailwind CSS 4 | 开发热更新 + API 代理 |
-| **字体** | Orbitron + Rajdhani + Noto Sans SC | 科幻感英文 + 可读性中文 |
-
----
-
-## 项目结构
-
-```
-fight/
-├── server.py              # FastAPI 入口，路由定义，SSE 事件流
-├── battle_manager.py      # 核心对战引擎：历史管理、视角转译、流式调用
-├── battle.py              # CLI 版本（终端交互式对战，开发调试用）
-├── personas/              # KOL 人格定义
-│   ├── __init__.py        # 人格注册表
-│   ├── hu_chenfeng.py     # 户晨风 — 消费主义 / 苹果安卓二元论
-│   ├── zhang_xuefeng.py   # 张雪峰 — 学历现实主义 / 就业倒推法
-│   ├── da_bing.py         # 大冰 — 底盘优先 / 低谷重建
-│   ├── feng_ge.py         # 峰哥 — "这是好事啊" / 性压抑驱动论
-│   └── changshu_arnold.py # 常熟阿诺 — 认知缺陷建模 / 错别字系统
-├── requirements.txt       # Python 依赖
-├── .env                   # API Key 配置
-├── frontend/
-│   ├── src/
-│   │   ├── App.tsx            # 页面路由状态机
-│   │   ├── api/battle.ts      # API 客户端 + SSE 消费
-│   │   ├── data/kols.ts       # KOL 元数据（颜色、标签）
-│   │   ├── pages/
-│   │   │   ├── HomePage.tsx   # 主页：话题输入 + KOL 选择 + 参数配置
-│   │   │   ├── BattlePage.tsx # 对战页：实时流式对话 + 用户介入
-│   │   │   └── ResultPage.tsx # 结果页：AI 观点总结 + 笔记
-│   │   └── components/
-│   │       ├── KolCarousel.tsx   # 扇形卡片轮播
-│   │       ├── KolCard.tsx       # 单张 KOL 卡片
-│   │       ├── CursorEffects.tsx # 自定义光标 + 粒子拖尾
-│   │       ├── TopicBubbles.tsx  # 话题气泡
-│   │       └── HistoryDrawer.tsx # 历史记录侧边栏
-│   ├── index.html
-│   └── vite.config.ts
-├── skills/                # KOL 参考素材（语料包）
-└── Ref/                   # UI 参考设计图
-```
-
----
-
-## 设计取舍与局限
-
-1. **内存存储**：`battles` 字典存在内存中，服务重启即丢失。这是有意为之——对战是一次性的娱乐内容，不需要持久化。如果需要历史回放，可以在 `battle_end` 时将 `battle_history` 序列化到数据库。
-
-2. **同步流式生成器**：`_stream_rounds` 是同步函数，在 Uvicorn 的线程池中执行。这意味着每个活跃的对战流会占用一个线程。对于当前规模（少量并发用户）这完全可接受，如果需要高并发，应改用 `async` 生成器 + `AsyncAnthropic` 客户端。
-
-3. **Persona 维护成本**：每个 KOL 的 system prompt 长达 2000-4000 字，是人工精心编写的认知模型。添加新 KOL 需要大量的语料研究和提示工程。`skills/` 目录下的语料包是这个过程的输入素材。
-
-4. **无身份验证**：API 完全开放，适合本地使用或演示环境。生产部署需要加 API Key 或 OAuth。
-
-5. **前端手动路由**：没有使用 react-router，而是用 `useState` 管理三个页面。这限制了 URL 深链接和浏览器前进/后退，但对于一个单流程的娱乐应用来说足够简洁。
+赛博斗蛐蛐Let Them Fight！ · 抖音黑客松深圳大学城站 · 内容重构赛道
